@@ -49,7 +49,8 @@
 // SW renderer only used on iOS when forced in config file; SDL surface doesn't support high-DPI on iOS
 #define USE_GL_BLITTER (PLATFORM_OSX || PLATFORM_ANDROID || PLATFORM_IOS)  // || PLATFORM_EMSCRIPTEN)
 
-#define USE_NANOVG_VTEX 1
+// possible regression on iOS 18.4, so safer to stick w/ framebuffer fetch for now
+#define USE_NANOVG_VTEX (!PLATFORM_IOS)
 // note these are not marked as build dependencies (in application.d) since nanovg-2 is `isystem`
 // Only basic GLES3, at best, so use SW renderer
 #if PLATFORM_EMSCRIPTEN
@@ -468,7 +469,8 @@ int SDL_main(int argc, char* argv[])
 
 #if IS_DEBUG && !PLATFORM_MOBILE
   SDL_HideWindow(sdlWindow);
-  SCRIBBLE_LOG("\n**** RUNNING TESTS ****\n%s\n", scribbleApp->runTest("test").c_str());
+  if(Application::glRender)
+    SCRIBBLE_LOG("\n**** RUNNING TESTS ****\n%s\n", scribbleApp->runTest("test").c_str());
 #endif
 
   delete scribbleApp;
