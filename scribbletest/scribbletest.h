@@ -20,6 +20,8 @@ public:
   // result string to be read by caller
   std::string resultStr;
 
+  static bool exitAfterTest;
+
 private:
   ScribbleConfig* scribbleConfig;
   ScribbleDoc* scribbleDoc;

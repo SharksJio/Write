@@ -145,9 +145,9 @@ int ScribbleArea::numPages() const
 // changed from 375x625 and 0.5 zoom to 240x400 and 0.32 zoom to decrease thumbnail size
 void ScribbleArea::drawThumbnail(Image* dest)
 {
-  //Painter thumbpaint(Painter::PAINT_SW, dest);  // note sRGB disabled
-  Painter& thumbpaint = *Application::painter;  // need to use GL painter for ScribbleTest
-  thumbpaint.setTarget(dest);
+  bool thumbtest = cfg->Int("saveThumbnail") == 2;
+  int srgb = thumbtest ? Painter::SRGB_AWARE : 0;  // disable sRGB for better contrast
+  Painter thumbpaint(Painter::PAINT_SW | srgb, dest);
   thumbpaint.beginFrame();
   thumbpaint.save();
   // aliasing in thumbnails is quite noticible on high-DPI displays
@@ -155,7 +155,7 @@ void ScribbleArea::drawThumbnail(Image* dest)
   // thumbPaint.reset();  -- should make thumbPaint a member of ScribbleArea
   Rect dirty = thumbpaint.deviceRect;
   // for narrow pages, set zoom so that page width fills preview
-  Dim minscale = cfg->Int("saveThumbnail") == 2 ? 0.32 : 0.25;  // ... for tests
+  Dim minscale = thumbtest ? 0.32 : 0.25;  // ... for tests
   Dim scale = std::max(minscale, dirty.width()/currPage->width());
   dirty.right /= scale;
   dirty.bottom /= scale;
@@ -191,7 +191,6 @@ void ScribbleArea::drawThumbnail(Image* dest)
         dirty.right - dd, dirty.bottom - dd, TEXT_FG_COLOR, TEXT_BG_COLOR);
   }*/
   thumbpaint.endFrame();
-  thumbpaint.setTarget(NULL);
 }
 
 Point ScribbleArea::getPageOrigin(int pagenum) const

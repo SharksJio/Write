@@ -2769,6 +2769,7 @@ void ScribbleApp::runTestUI(std::string runtype)
 
 std::string ScribbleApp::runTest(std::string runtype)
 {
+  if(runtype == runType) { ScribbleTest::exitAfterTest = true; }
   if(runtype == "test") {
     ScribbleTest test(SCRIBBLE_TEST_PATH);
     test.runAll();

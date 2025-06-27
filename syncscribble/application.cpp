@@ -69,6 +69,7 @@
 #include "nanovg_gl_utils.h"
 
 #define NANOVG_SW_IMPLEMENTATION
+#define NVGSW_QUIET_FRAME
 #include "nanovg_sw.h"
 
 #if PLATFORM_ANDROID || PLATFORM_EMSCRIPTEN

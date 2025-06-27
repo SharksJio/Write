@@ -23,3 +23,8 @@ To build executable `syncscribble/Release/Write`:
  * in `syncscribble/Makefile`, set `DEPENDBASE` to the parent folder containing all dependencies that `make` should track
  * build SDL: `cd SDL && git checkout write-win && make -f ../scribbleres/SDL-Makefile.msvc`
  * open a Visual Studio command prompt (from the Start Menu) and run `cd syncscribble && make`
+
+
+## Contributing ##
+
+Contributions are welcome, but please open an issue or discussion before starting on major changes.
