@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
-    - run: git switch write-linux
+    - run: git branch -r && git fetch --all && git checkout write-linux
       working-directory: SDL
     - run: make DEBUG=1
       working-directory: syncscribble
