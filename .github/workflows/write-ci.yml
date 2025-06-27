@@ -10,12 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - run: git branch -r && git fetch --all && git checkout write-linux
-      working-directory: SDL
+    - run: git clone --recurse-submodules https://github.com/styluslabs/Write
+    #- uses: actions/checkout@v4
+    #  with:
+    #    submodules: recursive
+    - run: git switch write-linux
+      working-directory: Write/SDL
     - run: make DEBUG=1
-      working-directory: syncscribble
+      working-directory: Write/syncscribble
     - run: ./Debug/Write --test
-      working-directory: syncscribble
+      working-directory: Write/syncscribble
