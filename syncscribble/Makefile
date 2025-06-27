@@ -283,11 +283,6 @@ else
   endif
 endif
 
-ifneq ($(DEBUG), 0)
-  # use asan by default for debug build
-  SANITIZE = 1
-endif
-
 # must use this instead of just -lpthread so the defines needed by force_glibc.h are created
 CFLAGS = -pthread
 # X11 and Xi needed for linuxtablet.c

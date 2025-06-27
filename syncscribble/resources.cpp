@@ -88,12 +88,16 @@ void setupResources()
   const char* sans = "SanFranciscoDisplay-Regular.otf";
   const char* fallback = "DroidSansFallback.ttf";
 #elif PLATFORM_LINUX
-  const char* fontpath = Application::appDir.c_str();
-  FSPath sansPath(fontpath, "Roboto-Regular.ttf");
-  FSPath fallbackPath(fontpath, "DroidSansFallback.ttf");
+  FSPath fontpath(Application::appDir);
+  FSPath sansPath = fontpath.child("Roboto-Regular.ttf");
+  if(!sansPath.exists()) {
+     fontpath = FSPath(Application::appDir, "../../scribbleres/fonts/");
+     sansPath = fontpath.child("Roboto-Regular.ttf");
+  }
+  FSPath fallbackPath = fontpath.child("DroidSansFallback.ttf");
   const char* sans = sansPath.c_str();
   const char* fallback = fallbackPath.c_str();
-  //sansBoldPath = FSPath(fontpath, "Roboto-Bold.ttf");
+  sansBackupPath = FSPath("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
   //sansItalicPath = FSPath(fontpath, "Roboto-Italic.ttf");
 #elif PLATFORM_EMSCRIPTEN
   Painter::loadFontMem("ui-sans", Roboto_Regular_ttf, Roboto_Regular_ttf_len);

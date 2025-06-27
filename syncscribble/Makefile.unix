@@ -21,12 +21,14 @@ ifneq ($(DEBUG), 0)
   # rdynamic needed to get backtrace symbols from, e.g., catchsegv
   LDFLAGS += -rdynamic
   BUILDDIR ?= Debug
+  # enable asan by default for debug build
+  SANITIZE ?= 1
 else
   CFLAGS += -O2 -DNDEBUG
   BUILDDIR ?= Release
+  SANITIZE ?= 0
 endif
 
-SANITIZE ?= 0
 ifneq ($(SANITIZE), 0)
   CFLAGS += -fsanitize=address -fsanitize=undefined -fsanitize=float-divide-by-zero
   LDFLAGS += -lasan -lubsan

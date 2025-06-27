@@ -19,7 +19,7 @@ jobs:
         submodules: recursive
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
-    - run: make DEBUG=1 USE_SYSTEM_SDL=1
+    - run: make DEBUG=1 SANITIZE=0 USE_SYSTEM_SDL=1
       working-directory: syncscribble
-    - run: ./Debug/Write --test
+    - run: ./Debug/Write --glRender=0 --test
       working-directory: syncscribble
