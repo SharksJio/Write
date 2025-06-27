@@ -10,13 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - run: git clone --recurse-submodules https://github.com/styluslabs/Write
-    #- uses: actions/checkout@v4
-    #  with:
-    #    submodules: recursive
-    - run: git switch write-linux
-      working-directory: Write/SDL
-    - run: make DEBUG=1
-      working-directory: Write/syncscribble
+    #- run: git clone --recurse-submodules https://github.com/styluslabs/Write
+    # can't switch branch of submodule from actions/checkout: https://github.com/actions/checkout/issues/1815
+    #- run: git switch write-linux
+    #  working-directory: Write/SDL
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
+    - run: make DEBUG=1 USE_SYSTEM_SDL=1
+      working-directory: syncscribble
     - run: ./Debug/Write --test
-      working-directory: Write/syncscribble
+      working-directory: syncscribble
