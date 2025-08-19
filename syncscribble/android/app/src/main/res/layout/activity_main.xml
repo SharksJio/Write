@@ -1,64 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <!-- Main Toolbar -->
+    <!-- Main content area with vertical toolbar on left -->
     <LinearLayout
-        android:id="@+id/main_toolbar_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#f0f0f0"
-        android:elevation="4dp">
-        
-        <!-- Toolbar content will be added dynamically -->
-        
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- Vertical Toolbar on Left -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
+
+            <LinearLayout
+                android:id="@+id/vertical_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:gravity="top|center_horizontal">
+
+                <!-- Tool Toggle Group -->
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/tool_toggle_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <!-- Pen Tool -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/tool_pen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="✏️"
+                        android:textSize="24sp"
+                        android:contentDescription="Pen tool"
+                        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                        android:checked="true" />
+
+                    <!-- Eraser Tool -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/tool_eraser"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="🧽"
+                        android:textSize="24sp"
+                        android:contentDescription="Eraser tool"
+                        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal" />
+
+                    <!-- Select Tool -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/tool_select"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="👆"
+                        android:textSize="24sp"
+                        android:contentDescription="Select tool"
+                        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal" />
+
+                    <!-- Insert Space Tool -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/tool_insert_space"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="↕️"
+                        android:textSize="20sp"
+                        android:contentDescription="Insert space tool"
+                        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <!-- Separator -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="?attr/colorOutlineVariant" />
+
+                <!-- Additional Tools -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tool_undo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="↶"
+                    android:textSize="24sp"
+                    android:contentDescription="Undo"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tool_redo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="↷"
+                    android:textSize="24sp"
+                    android:contentDescription="Redo"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal" />
+
+                <!-- Spacer to push settings to bottom -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Settings/Menu Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tool_menu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="⚙️"
+                    android:textSize="24sp"
+                    android:contentDescription="Settings"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Main Canvas Area -->
+        <FrameLayout
+            android:id="@+id/main_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <!-- Canvas View (Custom drawing surface) -->
+            <com.jio.writingapp.NativeCanvasView
+                android:id="@+id/canvas_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/colorSurface" />
+
+            <!-- Optional overlays will be added here -->
+
+        </FrameLayout>
+
     </LinearLayout>
 
-    <!-- Pen Toolbar -->
-    <LinearLayout
-        android:id="@+id/pen_toolbar_container"
-        android:layout_width="match_parent"
+    <!-- Floating Action Button for quick actions -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_new_page"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#e0e0e0"
-        android:elevation="2dp"
-        android:visibility="gone">
-        
-        <!-- Pen toolbar content will be added dynamically -->
-        
-    </LinearLayout>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="New page"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:backgroundTint="?attr/colorPrimary" />
 
-    <!-- Main Content Area -->
-    <FrameLayout
-        android:id="@+id/main_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <!-- Canvas View (Custom drawing surface) -->
-        <com.styluslabs.writeqt.NativeCanvasView
-            android:id="@+id/canvas_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- Optional overlays will be added here -->
-
-    </FrameLayout>
-
-    <!-- Status/Notification Toolbar -->
-    <LinearLayout
-        android:id="@+id/notify_toolbar_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#f0f0f0"
-        android:visibility="gone">
-        
-        <!-- Notification toolbar content will be added dynamically -->
-        
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

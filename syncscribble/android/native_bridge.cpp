@@ -29,47 +29,47 @@ extern "C" {
 
 // Activity lifecycle
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnCreate(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeActivity_jniOnCreate(JNIEnv *env, jobject thiz);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnStart(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeActivity_jniOnStart(JNIEnv *env, jobject thiz);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnResume(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeActivity_jniOnResume(JNIEnv *env, jobject thiz);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnPause(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeActivity_jniOnPause(JNIEnv *env, jobject thiz);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnStop(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeActivity_jniOnStop(JNIEnv *env, jobject thiz);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnDestroy(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeActivity_jniOnDestroy(JNIEnv *env, jobject thiz);
 
 // Surface handling
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceCreated(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height);
+Java_com_jio_writingapp_NativeCanvasView_jniSurfaceCreated(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceChanged(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height);
+Java_com_jio_writingapp_NativeCanvasView_jniSurfaceChanged(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceDestroyed(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeCanvasView_jniSurfaceDestroyed(JNIEnv *env, jobject thiz);
 
 // Input handling
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobject thiz, jint action, jint pointerId, jfloat x, jfloat y, jfloat pressure);
+Java_com_jio_writingapp_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobject thiz, jint action, jint pointerId, jfloat x, jfloat y, jfloat pressure);
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniSendKeyEvent(JNIEnv *env, jobject thiz, jint keyCode, jint action);
+Java_com_jio_writingapp_NativeActivity_jniSendKeyEvent(JNIEnv *env, jobject thiz, jint keyCode, jint action);
 
 // Intent handling
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniSetIntent(JNIEnv *env, jobject thiz, jstring action, jstring data, jstring type);
+Java_com_jio_writingapp_NativeActivity_jniSetIntent(JNIEnv *env, jobject thiz, jstring action, jstring data, jstring type);
 
 // Drawing
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniDrawFrame(JNIEnv *env, jobject thiz);
+Java_com_jio_writingapp_NativeCanvasView_jniDrawFrame(JNIEnv *env, jobject thiz);
 
 } // extern "C"
 
@@ -92,7 +92,7 @@ static void initializeNativeApp() {
 
 // Activity lifecycle implementations
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnCreate(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeActivity_jniOnCreate(JNIEnv *env, jobject thiz) {
     LOGI("jniOnCreate called");
     
     // Store JVM and activity reference
@@ -104,31 +104,31 @@ Java_com_styluslabs_writeqt_NativeActivity_jniOnCreate(JNIEnv *env, jobject thiz
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnStart(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeActivity_jniOnStart(JNIEnv *env, jobject thiz) {
     LOGI("jniOnStart called");
     // Handle app start
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnResume(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeActivity_jniOnResume(JNIEnv *env, jobject thiz) {
     LOGI("jniOnResume called");
     Application::isSuspended = false;
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnPause(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeActivity_jniOnPause(JNIEnv *env, jobject thiz) {
     LOGI("jniOnPause called");
     Application::isSuspended = true;
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnStop(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeActivity_jniOnStop(JNIEnv *env, jobject thiz) {
     LOGI("jniOnStop called");
     // Handle app stop
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniOnDestroy(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeActivity_jniOnDestroy(JNIEnv *env, jobject thiz) {
     LOGI("jniOnDestroy called");
     
     // Cleanup
@@ -150,7 +150,7 @@ Java_com_styluslabs_writeqt_NativeActivity_jniOnDestroy(JNIEnv *env, jobject thi
 
 // Surface handling implementations
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceCreated(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height) {
+Java_com_jio_writingapp_NativeCanvasView_jniSurfaceCreated(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height) {
     LOGI("jniSurfaceCreated: %dx%d", width, height);
     
     // Get native window from surface
@@ -169,7 +169,7 @@ Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceCreated(JNIEnv *env, jobj
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceChanged(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height) {
+Java_com_jio_writingapp_NativeCanvasView_jniSurfaceChanged(JNIEnv *env, jobject thiz, jobject surface, jint width, jint height) {
     LOGI("jniSurfaceChanged: %dx%d", width, height);
     
     if (g_scribble_app && g_native_window) {
@@ -179,7 +179,7 @@ Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceChanged(JNIEnv *env, jobj
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceDestroyed(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeCanvasView_jniSurfaceDestroyed(JNIEnv *env, jobject thiz) {
     LOGI("jniSurfaceDestroyed called");
     
     if (g_native_window) {
@@ -190,7 +190,7 @@ Java_com_styluslabs_writeqt_NativeCanvasView_jniSurfaceDestroyed(JNIEnv *env, jo
 
 // Input handling implementations
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobject thiz, jint action, jint pointerId, jfloat x, jfloat y, jfloat pressure) {
+Java_com_jio_writingapp_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobject thiz, jint action, jint pointerId, jfloat x, jfloat y, jfloat pressure) {
     if (!g_scribble_app) return;
     
     // Get the active ScribbleArea to send input events to
@@ -226,7 +226,7 @@ Java_com_styluslabs_writeqt_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobjec
 }
 
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniSendKeyEvent(JNIEnv *env, jobject thiz, jint keyCode, jint action) {
+Java_com_jio_writingapp_NativeActivity_jniSendKeyEvent(JNIEnv *env, jobject thiz, jint keyCode, jint action) {
     if (!g_scribble_app) return;
     
     LOGI("Key event: code=%d, action=%d", keyCode, action);
@@ -235,7 +235,7 @@ Java_com_styluslabs_writeqt_NativeActivity_jniSendKeyEvent(JNIEnv *env, jobject 
 
 // Intent handling implementation
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeActivity_jniSetIntent(JNIEnv *env, jobject thiz, jstring action, jstring data, jstring type) {
+Java_com_jio_writingapp_NativeActivity_jniSetIntent(JNIEnv *env, jobject thiz, jstring action, jstring data, jstring type) {
     const char* actionStr = env->GetStringUTFChars(action, nullptr);
     const char* dataStr = env->GetStringUTFChars(data, nullptr);
     const char* typeStr = env->GetStringUTFChars(type, nullptr);
@@ -254,7 +254,7 @@ Java_com_styluslabs_writeqt_NativeActivity_jniSetIntent(JNIEnv *env, jobject thi
 
 // Drawing implementation
 JNIEXPORT void JNICALL
-Java_com_styluslabs_writeqt_NativeCanvasView_jniDrawFrame(JNIEnv *env, jobject thiz) {
+Java_com_jio_writingapp_NativeCanvasView_jniDrawFrame(JNIEnv *env, jobject thiz) {
     if (!g_scribble_app || !g_native_window) return;
     
     // Get window dimensions

@@ -1,4 +1,4 @@
-package com.styluslabs.writeqt;
+package com.jio.writingapp;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -18,15 +18,14 @@ import android.util.Log;
 public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "NativeCanvasView";
     
-    private SurfaceHolder mHolder;
-    private Paint mPaint;
+    private SurfaceHolder mSurfaceHolder;
     private boolean mSurfaceReady = false;
+    private Paint mPaint;
     
-    // Native methods for drawing operations
+    // Native methods for surface integration
     private static native void jniSurfaceCreated(Object surface, int width, int height);
     private static native void jniSurfaceChanged(Object surface, int width, int height);
     private static native void jniSurfaceDestroyed();
-    private static native void jniDrawFrame();
     
     public NativeCanvasView(Context context) {
         super(context);
@@ -44,15 +43,17 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
     }
     
     private void init() {
-        mHolder = getHolder();
-        mHolder.addCallback(this);
+        mSurfaceHolder = getHolder();
+        mSurfaceHolder.addCallback(this);
         
         mPaint = new Paint();
-        mPaint.setColor(Color.WHITE);
-        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(2.0f);
+        mPaint.setStyle(Paint.Style.STROKE);
         
-        // Enable drawing
-        setWillNotDraw(false);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
     }
     
     @Override
@@ -81,7 +82,7 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
         Log.d(TAG, "Surface destroyed");
         mSurfaceReady = false;
         
-        // Notify native code
+        // Notify native code that surface is destroyed
         jniSurfaceDestroyed();
     }
     
@@ -90,14 +91,12 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
         super.onDraw(canvas);
         
         if (!mSurfaceReady) {
-            return;
+            // Draw placeholder content when surface is not ready
+            canvas.drawColor(Color.WHITE);
+            mPaint.setTextSize(48);
+            mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawText("Loading...", 50, 100, mPaint);
         }
-        
-        // Clear the canvas with white background
-        canvas.drawColor(Color.WHITE);
-        
-        // Trigger native drawing
-        jniDrawFrame();
     }
     
     /**
@@ -106,12 +105,7 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
      */
     public void requestRedraw() {
         if (mSurfaceReady) {
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    invalidate();
-                }
-            });
+            post(() -> invalidate());
         }
     }
     
@@ -120,7 +114,7 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
      * This can be called from native code via JNI
      */
     public Object getNativeSurface() {
-        return mHolder.getSurface();
+        return mSurfaceHolder != null ? mSurfaceHolder.getSurface() : null;
     }
     
     public boolean isSurfaceReady() {
@@ -129,7 +123,7 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
     
     // Static method for JNI to trigger redraw
     public static void triggerRedraw() {
-        // This would need a reference to the current canvas view
-        // For now, it's a placeholder for the JNI integration
+        // This would be called from native code to request a redraw
+        // Implementation would need to maintain a reference to the active canvas view
     }
 }

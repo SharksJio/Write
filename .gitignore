@@ -1,0 +1,23 @@
+# Android build files
+syncscribble/android/app/build/
+syncscribble/android/build/
+syncscribble/android/.gradle/
+syncscribble/android/local.properties
+
+# Demo files (temporary)
+ui_transformation_demo.html
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Compiled native libraries
+*.so
+*.o
+*.a
