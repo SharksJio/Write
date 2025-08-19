@@ -237,7 +237,6 @@ public class NativeActivity extends AppCompatActivity implements View.OnTouchLis
   }
 
   // Additional methods for image insertion, file handling, etc.
-  // (These would be similar to the original implementation but cleaned up)
   
   private String packageId() {
     return getApplicationContext().getPackageName();
@@ -246,5 +245,122 @@ public class NativeActivity extends AppCompatActivity implements View.OnTouchLis
   public void openUrl(String url) {
     Intent viewUrlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
     startActivity(viewUrlIntent);
+  }
+  
+  // Image insertion functionality
+  public void combinedGetImage() {
+    final File cameraFile = new File(getExternalCacheDir(), "_camera.jpg");
+    cameraFile.delete(); // remove existing
+    String authority = packageId() + ".fileprovider";
+    Uri outputFileUri = FileProvider.getUriForFile(this, authority, cameraFile);
+    
+    // capture image (camera) intents
+    final java.util.List<Intent> cameraIntents = new java.util.ArrayList<Intent>();
+    final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    final java.util.List<ResolveInfo> listCam = getPackageManager().queryIntentActivities(captureIntent, 0);
+    for(ResolveInfo res : listCam) {
+      final Intent intent = new Intent(captureIntent);
+      intent.setComponent(new android.content.ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+      intent.setPackage(res.activityInfo.packageName);
+      intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+      cameraIntents.add(intent);
+    }
+
+    // select image intents
+    final Intent galleryIntent = new Intent();
+    galleryIntent.setType("image/*");
+    galleryIntent.setAction(Intent.ACTION_PICK);
+
+    // combined intent
+    final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Image");
+    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new android.os.Parcelable[]{}));
+    startActivityForResult(chooserIntent, 1022);
+  }
+  
+  private boolean doInsertImage(InputStream inputStream, boolean fromintent) {
+    try {
+      BitmapFactory.Options opt = new BitmapFactory.Options();
+      opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
+      opt.inSampleSize = 1;
+      Bitmap img = null;
+      do {
+        try {
+          img = BitmapFactory.decodeStream(inputStream, null, opt);
+        } catch(OutOfMemoryError e) {}
+        opt.inSampleSize *= 2;
+      } while(img == null && opt.inSampleSize <= 16);
+      
+      if(img != null && img.getWidth() > 0 && img.getHeight() > 0) {
+        jniInsertImage(img, opt.outMimeType, fromintent);
+        return true;
+      } else {
+        Toast.makeText(this, "Error opening image", Toast.LENGTH_SHORT).show();
+        return false;
+      }
+    } catch(Exception e) {
+      Log.v("doInsertImage", "Exception decoding image: ", e);
+      Toast.makeText(this, "Error opening image", Toast.LENGTH_SHORT).show();
+      return false;
+    }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    super.onActivityResult(requestCode, resultCode, intent);
+    
+    if(requestCode == 1022 && resultCode == RESULT_OK) {
+      final File cameraFile = new File(getExternalCacheDir(), "_camera.jpg");
+      if(cameraFile.length() > 0) {
+        try {
+          doInsertImage(new FileInputStream(cameraFile), false);
+        } catch(FileNotFoundException e) {
+          Toast.makeText(this, "Camera image not found", Toast.LENGTH_SHORT).show();
+        }
+      } else if(intent != null && intent.getData() != null) {
+        try {
+          doInsertImage(getContentResolver().openInputStream(intent.getData()), false);
+        } catch(FileNotFoundException e) {
+          Toast.makeText(this, "Selected image not found", Toast.LENGTH_SHORT).show();
+        }
+      }
+    }
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    String action = intent.getAction();
+    
+    if(Intent.ACTION_SEND.equals(action)) {
+      if(intent.getType() != null && intent.getType().startsWith("image/")) {
+        final Uri imageURI = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if(imageURI != null) {
+          try {
+            if(doInsertImage(getContentResolver().openInputStream(imageURI), true)) {
+              Toast.makeText(this, "Image copied to clipboard. Paste where desired.", Toast.LENGTH_SHORT).show();
+            }
+          } catch(FileNotFoundException e) {
+            Toast.makeText(this, "Shared image not found", Toast.LENGTH_SHORT).show();
+          }
+        }
+      }
+    } else if(Intent.ACTION_VIEW.equals(action) || Intent.ACTION_EDIT.equals(action)) {
+      if(("text/html".equals(intent.getType()) || "image/svg+xml".equals(intent.getType()))
+          && intent.getData() != null) {
+        if(intent.getData().toString().startsWith("content://")) {
+          try {
+            ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(intent.getData(), "r");
+            jniOpenFileDesc(intent.getData().getPath(), pfd.getFd());
+            pfd.close();
+          } catch(Exception e) {
+            Log.v("onNewIntent", "Error opening document: " + intent.getData().toString(), e);
+          }
+        } else {
+          jniOpenFile(intent.getData().getPath());
+        }
+      }
+    }
+    
+    handleIntent(intent);
   }
 }
