@@ -221,34 +221,59 @@ include Makefile.ios
 
 else ifneq ($(BUILD_SHARED_LIBRARY),)
 # Android
-# Uses SDL 2.0.9 (branch write-android)
-# ./start_gradle assembleRelease && cp app/build/outputs/apk/release/app-release.apk . && ./resignapk.sh app-release.apk ~/styluslabs.keystore && mv signed_app-release.apk write300.apk
+# Two build modes: 
+# 1. SDL mode (default) - Uses SDL 2.0.9 (branch write-android)
+# 2. Native UI mode - Uses native Android UI (set ANDROID_NATIVE_UI=1)
 
 # working dir is android/app apparently
-ifneq ($(shell git -C ../../../SDL rev-parse --abbrev-ref HEAD),write-android)
-  $(error Not on write-android branch!)
+ifdef ANDROID_NATIVE_UI
+  # Native Android UI mode - no SDL dependency
+  LOCAL_PATH := $(call my-dir)
+  include $(CLEAR_VARS)
+  
+  SOURCES += android/androidhelper.cpp android/native_bridge.cpp
+  
+  # Native UI library loads as "libmain.so"
+  LOCAL_MODULE := main
+  
+  ALL_INC := $(INC) $(INCSYS)
+  LOCAL_C_INCLUDES := $(addprefix $(LOCAL_PATH)/, $(ALL_INC))
+  
+  LOCAL_CFLAGS := $(addprefix -D, $(DEFS)) -DANDROID_NATIVE_UI
+  LOCAL_CPPFLAGS := -std=c++14 -Wno-unused -Wno-error=format-security
+  
+  LOCAL_SRC_FILES := $(addprefix $(LOCAL_PATH)/, $(SOURCES))
+  # No SDL dependency for native UI mode
+  LOCAL_LDLIBS := -lGLESv3 -llog -ljnigraphics -landroid
+  
+  include $(BUILD_SHARED_LIBRARY)
+else
+  # SDL mode (traditional)
+  ifneq ($(shell git -C ../../../SDL rev-parse --abbrev-ref HEAD),write-android)
+    $(error Not on write-android branch!)
+  endif
+  
+  LOCAL_PATH := $(call my-dir)
+  include $(CLEAR_VARS)
+  
+  SOURCES += android/androidhelper.cpp
+  
+  # SDLActivity is hardcoded to load "libmain.so"
+  LOCAL_MODULE := main
+  
+  ALL_INC := $(INC) $(INCSYS) ../SDL/include
+  LOCAL_C_INCLUDES := $(addprefix $(LOCAL_PATH)/, $(ALL_INC))
+  
+  LOCAL_CFLAGS := $(addprefix -D, $(DEFS))
+  LOCAL_CPPFLAGS := -std=c++14 -Wno-unused -Wno-error=format-security
+  
+  LOCAL_SRC_FILES := $(addprefix $(LOCAL_PATH)/, $(SOURCES))
+  LOCAL_SHARED_LIBRARIES := SDL2
+  # libandroid needed for ANativeWindow_* fns
+  LOCAL_LDLIBS := -lGLESv3 -llog -ljnigraphics -landroid
+  
+  include $(BUILD_SHARED_LIBRARY)
 endif
-
-LOCAL_PATH := $(call my-dir)
-include $(CLEAR_VARS)
-
-SOURCES += android/androidhelper.cpp
-
-# SDLActivity is hardcoded to load "libmain.so"
-LOCAL_MODULE := main
-
-ALL_INC := $(INC) $(INCSYS) ../SDL/include
-LOCAL_C_INCLUDES := $(addprefix $(LOCAL_PATH)/, $(ALL_INC))
-
-LOCAL_CFLAGS := $(addprefix -D, $(DEFS))
-LOCAL_CPPFLAGS := -std=c++14 -Wno-unused -Wno-error=format-security
-
-LOCAL_SRC_FILES := $(addprefix $(LOCAL_PATH)/, $(SOURCES))
-LOCAL_SHARED_LIBRARIES := SDL2
-# libandroid needed for ANativeWindow_* fns
-LOCAL_LDLIBS := -lGLESv3 -llog -ljnigraphics -landroid
-
-include $(BUILD_SHARED_LIBRARY)
 
 else ifneq ($(EMSDK),)
 # Emscripten
