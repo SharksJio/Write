@@ -126,4 +126,10 @@ public class NativeCanvasView extends SurfaceView implements SurfaceHolder.Callb
     public boolean isSurfaceReady() {
         return mSurfaceReady;
     }
+    
+    // Static method for JNI to trigger redraw
+    public static void triggerRedraw() {
+        // This would need a reference to the current canvas view
+        // For now, it's a placeholder for the JNI integration
+    }
 }

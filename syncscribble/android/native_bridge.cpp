@@ -5,7 +5,9 @@
 #include <string.h>
 #include "application.h"
 #include "scribbleapp.h"
+#include "scribblearea.h"
 #include "scribbleinput.h"
+#include "scribblemode.h"
 #include "basics.h"
 
 // Forward declaration
@@ -191,16 +193,22 @@ JNIEXPORT void JNICALL
 Java_com_styluslabs_writeqt_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobject thiz, jint action, jint pointerId, jfloat x, jfloat y, jfloat pressure) {
     if (!g_scribble_app) return;
     
+    // Get the active ScribbleArea to send input events to
+    ScribbleArea* activeArea = g_scribble_app->activeArea();
+    if (!activeArea) {
+        LOGI("No active ScribbleArea to send input to");
+        return;
+    }
+    
     // Create InputEvent and send to ScribbleInput
-    // This replaces SDL touch event handling
     inputsource_t inputSource = INPUTSOURCE_TOUCH;
     
     // Determine input type based on action
-    inputevent_t eventType = INPUTEVENT_NONE;
+    inputevent_t eventType = INPUTEVENT_MOVE;
     switch (action) {
-        case 0: eventType = INPUTEVENT_DOWN; break;    // Touch down
+        case 0: eventType = INPUTEVENT_PRESS; break;   // Touch down
         case 1: eventType = INPUTEVENT_MOVE; break;    // Touch move  
-        case 2: eventType = INPUTEVENT_UP; break;      // Touch up
+        case 2: eventType = INPUTEVENT_RELEASE; break; // Touch up
         case 3: eventType = INPUTEVENT_CANCEL; break;  // Touch cancel
         case 4: eventType = INPUTEVENT_HOVER; break;   // Hover enter
         case 5: eventType = INPUTEVENT_HOVER; break;   // Hover move
@@ -211,10 +219,10 @@ Java_com_styluslabs_writeqt_NativeActivity_jniSendTouchEvent(JNIEnv *env, jobjec
     InputEvent ievent(inputSource, MODEMOD_NONE, 0, 1.0); // timestamp=0, maxwidth=1.0
     ievent.points.push_back(InputPoint(eventType, x, y, pressure > 0 ? pressure : 1.0f));
     
-    // Send to the current scribble input handler
-    // Note: This is a simplified version - the actual implementation would need
-    // to route this through the proper ScribbleInput instance
-    LOGI("Touch event: action=%d, id=%d, pos=(%.2f,%.2f), pressure=%.2f", action, pointerId, x, y, pressure);
+    // Send to the ScribbleInput of the active area
+    activeArea->doInputEvent(ievent);
+    
+    LOGI("Touch event sent: action=%d, id=%d, pos=(%.2f,%.2f), pressure=%.2f", action, pointerId, x, y, pressure);
 }
 
 JNIEXPORT void JNICALL
@@ -249,17 +257,28 @@ JNIEXPORT void JNICALL
 Java_com_styluslabs_writeqt_NativeCanvasView_jniDrawFrame(JNIEnv *env, jobject thiz) {
     if (!g_scribble_app || !g_native_window) return;
     
-    // Trigger a drawing update
-    // This replaces the SDL render loop
+    // Get window dimensions
+    int32_t width = ANativeWindow_getWidth(g_native_window);
+    int32_t height = ANativeWindow_getHeight(g_native_window);
+    
+    // Lock the window buffer for drawing
     ANativeWindow_Buffer buffer;
     if (ANativeWindow_lock(g_native_window, &buffer, nullptr) == 0) {
-        // Clear buffer
-        memset(buffer.bits, 255, buffer.stride * buffer.height * 4); // White background
+        // Clear buffer with white background
+        memset(buffer.bits, 255, buffer.stride * buffer.height * 4);
         
         // Perform actual drawing through the application
-        // This would integrate with the existing layoutAndDraw system
-        if (Application::gui) {
-            // Application::layoutAndDraw(); // This would need adaptation for native window
+        if (Application::gui && Application::painter) {
+            // Set up painter for the buffer dimensions
+            Application::painter->deviceRect = Rect::wh(width, height);
+            
+            // Trigger layout and drawing
+            // This integrates with the existing SVG GUI system
+            Rect dirty = Application::gui->layoutAndDraw(Application::painter);
+            
+            // Note: In a complete implementation, we'd need to set up
+            // the painter to render to the ANativeWindow buffer
+            // For now, this establishes the integration point
         }
         
         ANativeWindow_unlockAndPost(g_native_window);
