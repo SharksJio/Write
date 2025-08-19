@@ -18,6 +18,13 @@
 #include "wasm/wasmhelper.h"
 #endif
 
+// Android native UI mode - no SDL dependency
+#ifdef ANDROID_NATIVE_UI
+// Native Android mode - no SDL includes needed
+#else
+// Traditional SDL mode - include SDL headers
+#endif
+
 // note that bug w/ iOS split view was fixed after SDL 2.0.10 (https://hg.libsdl.org/SDL/rev/806598d72494)
 //  so we need to use a later rev until 2.0.12 comes out
 #if PLATFORM_IOS
@@ -235,6 +242,40 @@ void Application::setupUIScale(float horzdpi)
   painter->setAtlasTextThreshold(24 * gui->paintScale);  // 24px font is default for dialog titles
 }
 
+#ifdef ANDROID_NATIVE_UI
+// Native Android UI mode - alternative entry point
+int android_native_main(int argc, char* argv[])
+{
+  Application::runApplication = true;
+  
+  // Initialize without SDL
+  unet_init();
+  
+  // Use software rendering for native Android UI
+  Application::glRender = false;
+  
+  // Initialize core app components
+  Painter boundsPainter(Painter::PAINT_NULL);
+  SvgPainter boundsCalc(&boundsPainter);
+  SvgDocument::sharedBoundsCalc = &boundsCalc;
+
+  setupResources();  // load fonts, icons, etc.
+  const char* cfgLocale = ScribbleApp::cfg->String("locale", "");
+  scribbleApp->hasI18n = setupI18n(cfgLocale[0] ? cfgLocale : getLocale());
+  SvgGui* svgGui = new SvgGui();
+  Application::gui = svgGui;
+  svgGui->setWindowStylesheet(std::unique_ptr<SvgCssStylesheet>(createStylesheet()));
+
+  // Create ScribbleApp
+  if(!scribbleApp) {
+    scribbleApp = new ScribbleApp();
+    // setup app...
+  }
+  
+  // Native Android will handle event loop through JNI callbacks
+  return 0;
+}
+#endif
 
 int SDL_main(int argc, char* argv[])
 {
