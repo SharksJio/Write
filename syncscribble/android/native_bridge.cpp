@@ -3,6 +3,7 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <string.h>
+#include <string>
 #include "application.h"
 #include "scribbleapp.h"
 #include "scribblearea.h"
@@ -284,6 +285,86 @@ Java_com_jio_writingapp_NativeCanvasView_jniDrawFrame(JNIEnv *env, jobject thiz)
         ANativeWindow_unlockAndPost(g_native_window);
     }
 }
+
+// Native Android UI equivalents for SDL functions
+#ifdef ANDROID_NATIVE_UI
+
+// Equivalent to SDL_AndroidGetJNIEnv()
+JNIEnv* Native_AndroidGetJNIEnv() {
+    if (!g_jvm) return nullptr;
+    
+    JNIEnv* env = nullptr;
+    if (g_jvm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+        // Try to attach the current thread
+        if (g_jvm->AttachCurrentThread(&env, nullptr) != JNI_OK) {
+            return nullptr;
+        }
+    }
+    return env;
+}
+
+// Equivalent to SDL_AndroidGetActivity()
+jobject Native_AndroidGetActivity() {
+    return g_activity;
+}
+
+// Equivalent to SDL_AndroidGetExternalStoragePath()
+const char* Native_AndroidGetExternalStoragePath() {
+    static std::string external_storage_path;
+    
+    if (external_storage_path.empty() && g_jvm && g_activity) {
+        JNIEnv* env = Native_AndroidGetJNIEnv();
+        if (!env) return nullptr;
+        
+        // Get the activity class
+        jclass activityClass = env->GetObjectClass(g_activity);
+        if (!activityClass) return nullptr;
+        
+        // Get getExternalFilesDir method
+        jmethodID getExternalFilesDirMethod = env->GetMethodID(activityClass, "getExternalFilesDir", "(Ljava/lang/String;)Ljava/io/File;");
+        if (!getExternalFilesDirMethod) {
+            env->DeleteLocalRef(activityClass);
+            return nullptr;
+        }
+        
+        // Call getExternalFilesDir(null)
+        jobject fileObject = env->CallObjectMethod(g_activity, getExternalFilesDirMethod, nullptr);
+        if (!fileObject) {
+            env->DeleteLocalRef(activityClass);
+            return nullptr;
+        }
+        
+        // Get File class and getAbsolutePath method
+        jclass fileClass = env->GetObjectClass(fileObject);
+        jmethodID getAbsolutePathMethod = env->GetMethodID(fileClass, "getAbsolutePath", "()Ljava/lang/String;");
+        if (!getAbsolutePathMethod) {
+            env->DeleteLocalRef(fileClass);
+            env->DeleteLocalRef(fileObject);
+            env->DeleteLocalRef(activityClass);
+            return nullptr;
+        }
+        
+        // Get the path string
+        jstring pathString = (jstring)env->CallObjectMethod(fileObject, getAbsolutePathMethod);
+        if (pathString) {
+            const char* pathChars = env->GetStringUTFChars(pathString, nullptr);
+            if (pathChars) {
+                external_storage_path = pathChars;
+                env->ReleaseStringUTFChars(pathString, pathChars);
+            }
+            env->DeleteLocalRef(pathString);
+        }
+        
+        // Clean up local references
+        env->DeleteLocalRef(fileClass);
+        env->DeleteLocalRef(fileObject);
+        env->DeleteLocalRef(activityClass);
+    }
+    
+    return external_storage_path.empty() ? nullptr : external_storage_path.c_str();
+}
+
+#endif // ANDROID_NATIVE_UI
 
 // JNI Library loading
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {

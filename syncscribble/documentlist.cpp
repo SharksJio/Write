@@ -5,6 +5,15 @@
 #include "scribbledoc.h"
 #include "touchwidgets.h"
 
+#if PLATFORM_ANDROID && defined(ANDROID_NATIVE_UI)
+#include "android/native_android.h"
+#elif PLATFORM_ANDROID
+// SDL function provided by linked SDL library in traditional mode
+extern "C" {
+  const char* SDL_AndroidGetExternalStoragePath();
+}
+#endif
+
 static const char* docListWindowSVG = R"#(
 <svg class="window" layout="box">
   <g id="main-layout" box-anchor="fill" layout="flex" flex-direction="column">
@@ -102,7 +111,11 @@ void DocumentList::createUI()
   driveMenu->addItem(sharedDirBtn);
   privateDirBtn = createMenuItem("Android/data");
   privateDirBtn->onClicked = [this]() {
+#ifdef ANDROID_NATIVE_UI
+    const char* appstorage = Native_AndroidGetExternalStoragePath();
+#else
     const char* appstorage = SDL_AndroidGetExternalStoragePath();
+#endif
     setCurrDir(appstorage ? appstorage : "/sdcard/Android/data/com.styluslabs.writeqt/files");
   };
   driveMenu->addItem(privateDirBtn);
