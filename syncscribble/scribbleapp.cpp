@@ -13,6 +13,15 @@
 #include "scribbleinput.h"
 #include "documentlist.h"
 #include "rulingdialog.h"
+
+#if PLATFORM_ANDROID && defined(ANDROID_NATIVE_UI)
+#include "android/native_android.h"
+#elif PLATFORM_ANDROID
+// SDL function provided by linked SDL library in traditional mode
+extern "C" {
+  const char* SDL_AndroidGetExternalStoragePath();
+}
+#endif
 #include "pentoolbar.h"
 #include "linkdialog.h"
 #include "configdialog.h"
@@ -46,7 +55,11 @@ ScribbleApp::ScribbleApp(int argc, char* argv[])
   // load config
   const char* basepath = appDir.empty() ? "." : appDir.c_str();
 #if PLATFORM_ANDROID
+#ifdef ANDROID_NATIVE_UI
+  const char* appstorage = Native_AndroidGetExternalStoragePath();
+#else
   const char* appstorage = SDL_AndroidGetExternalStoragePath();
+#endif
   if(!appstorage)
     appstorage = "/sdcard/Android/data/com.styluslabs.writeqt/files";  // prevent crash
   docRoot = "/sdcard/styluslabs/write/";

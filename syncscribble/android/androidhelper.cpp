@@ -6,6 +6,16 @@
 #include "android/native_window_jni.h"
 #include "scribbleapp.h"
 
+#ifdef ANDROID_NATIVE_UI
+#include "android/native_android.h"
+#else
+// SDL functions are provided by linked SDL library in traditional mode
+extern "C" {
+  void* SDL_AndroidGetJNIEnv();
+  void* SDL_AndroidGetActivity();
+}
+#endif
+
 ScribbleApp* AndroidHelper::mainWindowInst = NULL;
 bool AndroidHelper::acceptVolKeys = false;
 static const char className[] = "com/jio/writingapp/NativeActivity";
@@ -25,12 +35,22 @@ public:
   AndroidMethod(const char* name, const char* sig)
   {
     // retrieve the JNI environment
+#ifdef ANDROID_NATIVE_UI
+    env = Native_AndroidGetJNIEnv();
+#else
     env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+#endif
     if(!env) return;
-    // retrieve the Java instance of the SDLActivity
+    
+    // retrieve the Java instance of the Activity
+#ifdef ANDROID_NATIVE_UI
+    activity = Native_AndroidGetActivity();
+#else
     activity = (jobject)SDL_AndroidGetActivity();
+#endif
     if(!activity) return;
-    // find the Java class of the activity. It should be SDLActivity or a subclass of it.
+    
+    // find the Java class of the activity
     clazz = env->GetObjectClass(activity);
     if(!clazz) return;
     // find the identifier of the method to call

@@ -6,6 +6,15 @@
 #include "scribbleapp.h"
 #include "scribbleconfig.h"
 
+#if PLATFORM_ANDROID && defined(ANDROID_NATIVE_UI)
+#include "android/native_android.h"
+#elif PLATFORM_ANDROID
+// SDL function provided by linked SDL library in traditional mode
+extern "C" {
+  const char* SDL_AndroidGetExternalStoragePath();
+}
+#endif
+
 
 // String resources: `python embed.py icons/*.svg > res_icons.cpp` (for example) to build resource file
 struct ResourceItem
@@ -74,7 +83,11 @@ void setupResources()
   const char* sans = sansPath.c_str();
   const char* fallback = fallbackPath.c_str();
 #elif PLATFORM_ANDROID
+#ifdef ANDROID_NATIVE_UI
+  const char* extStorage = Native_AndroidGetExternalStoragePath();
+#else
   const char* extStorage = SDL_AndroidGetExternalStoragePath();
+#endif
   if(!extStorage)
     extStorage = "/sdcard/Android/data/com.styluslabs.writeqt/files";  // prevent crash
   const char* sans = "/system/fonts/Roboto-Regular.ttf";
