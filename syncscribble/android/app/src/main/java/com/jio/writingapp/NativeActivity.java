@@ -40,6 +40,8 @@ import android.view.ViewGroup;
 import android.view.View;
 import android.view.MotionEvent;
 import android.view.InputDevice;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -76,6 +78,9 @@ public class NativeActivity extends AppCompatActivity implements View.OnTouchLis
   private FrameLayout mMainContainer;
   private CoordinatorLayout mRootLayout;
   
+  // AI Agent
+  private AIAgentManager aiAgent;
+  
   static {
     System.loadLibrary("main");
   }
@@ -86,6 +91,9 @@ public class NativeActivity extends AppCompatActivity implements View.OnTouchLis
     
     // Initialize native code
     jniOnCreate();
+    
+    // Initialize AI Agent
+    aiAgent = AIAgentManager.getInstance(this);
     
     // Setup Material 3 UI layout
     setupMaterial3UI();
@@ -362,5 +370,36 @@ public class NativeActivity extends AppCompatActivity implements View.OnTouchLis
     }
     
     handleIntent(intent);
+  }
+  
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_menu, menu);
+    return true;
+  }
+  
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+    
+    if (id == R.id.action_ai_chat) {
+      openAIChat();
+      return true;
+    } else if (id == R.id.action_ai_config) {
+      openAIConfig();
+      return true;
+    }
+    
+    return super.onOptionsItemSelected(item);
+  }
+  
+  private void openAIChat() {
+    Intent intent = new Intent(this, AIChatActivity.class);
+    startActivity(intent);
+  }
+  
+  private void openAIConfig() {
+    Intent intent = new Intent(this, AIConfigActivity.class);
+    startActivity(intent);
   }
 }

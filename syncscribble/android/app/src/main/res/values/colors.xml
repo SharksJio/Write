@@ -31,4 +31,9 @@
     <color name="md_theme_dark_onSurface">#E2E2E9</color>
     <color name="md_theme_dark_surfaceVariant">#43474E</color>
     <color name="md_theme_dark_onSurfaceVariant">#C3C7CF</color>
+    
+    <!-- AI Chat Colors -->
+    <color name="user_message_background">@color/md_theme_light_primary</color>
+    <color name="assistant_message_background">@color/md_theme_light_surfaceVariant</color>
+    <color name="system_message_background">#FFF0F7FF</color>
 </resources>

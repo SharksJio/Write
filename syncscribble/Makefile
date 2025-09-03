@@ -35,7 +35,10 @@ SOURCES = \
   syncdialog.cpp \
   touchwidgets.cpp \
   mainwindow.cpp \
-  scribbleapp.cpp
+  scribbleapp.cpp \
+  aiagent.cpp \
+  aiservice_providers.cpp \
+  rag_service.cpp
 
 SOURCES += \
   ../ugui/svggui.cpp \
@@ -231,7 +234,7 @@ ifdef ANDROID_NATIVE_UI
   LOCAL_PATH := $(call my-dir)
   include $(CLEAR_VARS)
   
-  SOURCES += android/androidhelper.cpp android/native_bridge.cpp
+  SOURCES += android/androidhelper.cpp android/native_bridge.cpp android/ai_jni_bridge.cpp
   
   # Native UI library loads as "libmain.so"
   LOCAL_MODULE := main

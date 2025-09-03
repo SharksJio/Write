@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">JioWrite</string>
+    
+    <!-- AI Assistant Strings -->
+    <string name="ai_assistant_title">AI Assistant</string>
+    <string name="ai_config_title">AI Configuration</string>
+    <string name="ai_provider_label">AI Provider</string>
+    <string name="api_key_label">API Key</string>
+    <string name="base_url_label">Base URL</string>
+    <string name="test_connection">Test Connection</string>
+    <string name="save_config">Save Configuration</string>
+    
+    <!-- Filter Configuration -->
+    <string name="content_filtering_title">Content Filtering</string>
+    <string name="filter_level_label">Filter Level</string>
+    <string name="enable_rag_filtering">Enable RAG Content Filtering</string>
+    <string name="allowed_topics_label">Allowed Topics</string>
+    <string name="blocked_topics_label">Blocked Topics</string>
+    <string name="allowed_use_cases_label">Allowed Use Cases</string>
+    
+    <!-- Chat Interface -->
+    <string name="message_hint">Ask me anything about your notes...</string>
+    <string name="send_message">Send message</string>
+    <string name="ai_welcome_message">Hi! I\'m your AI writing assistant. I can help you with:</string>
+    <string name="ai_capabilities">• Summarize your notes\n• Extract key points\n• Answer questions about your content\n• Generate new text\n• And much more!</string>
+    
+    <!-- Quick Actions -->
+    <string name="summarize_selection">Summarize Selection</string>
+    <string name="extract_key_points">Extract Key Points</string>
+    <string name="ask_question">Ask Question</string>
+    <string name="generate_ideas">Generate Ideas</string>
+    
+    <!-- Error Messages -->
+    <string name="ai_not_configured">AI Assistant needs to be configured first.</string>
+    <string name="config_needed_message">Please go to Settings > AI Configuration to set up your AI provider.</string>
+    <string name="select_text_first">Please select some text first</string>
+    <string name="connection_successful">Connection successful!</string>
+    <string name="connection_failed">Connection failed. Please check your configuration.</string>
+    <string name="config_saved">Configuration saved successfully!</string>
+    <string name="config_save_failed">Failed to save configuration</string>
+    <string name="select_provider">Please select a provider</string>
+    <string name="enter_api_key">Please enter an API key</string>
 </resources>
