@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_ai_chat"
+        android:title="AI Assistant"
+        android:icon="@drawable/ic_smart_toy"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_ai_config"
+        android:title="AI Configuration"
+        app:showAsAction="never" />
+
+</menu>

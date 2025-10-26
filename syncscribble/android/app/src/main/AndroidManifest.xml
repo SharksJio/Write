@@ -66,6 +66,17 @@
           <data android:mimeType="image/svg+xml"/>
       </intent-filter>
     </activity>
+    
+    <!-- AI Assistant Activities -->
+    <activity android:name="com.jio.writingapp.AIChatActivity"
+      android:label="@string/ai_assistant_title"
+      android:parentActivityName="com.jio.writingapp.NativeActivity"
+      android:theme="@style/Theme.JioWrite" />
+      
+    <activity android:name="com.jio.writingapp.AIConfigActivity"
+      android:label="@string/ai_config_title"
+      android:parentActivityName="com.jio.writingapp.NativeActivity"
+      android:theme="@style/Theme.JioWrite" />
   </application>
 
 </manifest>
